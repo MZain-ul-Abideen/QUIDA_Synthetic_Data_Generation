@@ -1,0 +1,32 @@
+==============================================================================
+POST-EVALUATION INTERPRETATION  (evidence vs inference)
+==============================================================================
+
+Q1. Best overall trade-off of QUALITY and QUANTITY (headline recommendation):
+    Jitter_X_imu (Jittering + IMU) — combined 0.920 [quality 0.957, quantity_score 0.833, full_N 594], top-3 stability 100.000%.
+    (This dataset also leads on pure quality, so quality and combined agree here.)
+
+Q2. Strongest fidelity: Jitter_X_imu_ir (fidelity 0.992).
+Q3. Strongest diversity: Jitter_X_imu (diversity 0.949).
+
+Q4. Best generation method (controlling for sensor combo): Jittering — mean rank-in-combo 1.000, mean overall 0.924, wins 4/4 combos.
+Q5. Best sensor combination (averaged over methods): IMU+Radar — mean overall 0.596 (best single: Jittering).
+
+Q6. Sample-size influence: Spearman(full_N, pure-quality) = 0.689; Spearman(full_N, combined) = 0.864. Quantity and quality are correlated here — the combined score still applies diminishing returns and a quality gate so size cannot dominate.
+
+Q7. Top dataset stability: Jitter_X_imu held top-3 in 100.000% of 20 controlled repeats (rank std 0.000).
+
+Q8. Recommended to proceed (4), by combined quality+quantity:
+    - Jitter_X_imu [Highest Priority] combined 0.920 (quality 0.957, full_N 594, top-3 100.000%)
+    - Jitter_X_imu_ir_radar [Highest Priority] combined 0.832 (quality 0.921, full_N 495, top-3 95.000%)
+    - Jitter_X_imu_ir [High Priority] combined 0.886 (quality 0.909, full_N 594, top-3 55.000%)
+    - Jitter_X_imu_radar [High Priority] combined 0.823 (quality 0.908, full_N 495, top-3 50.000%)
+
+------------------------------------------------------------------------------
+DISTINCTIONS (do not conflate):
+  best individual dataset (combined) : Jitter_X_imu
+  best individual dataset (quality)  : Jitter_X_imu
+  best generation method             : Jittering
+  best sensor combination            : IMU+Radar
+------------------------------------------------------------------------------
+Framing: values are 'highest under this evaluation procedure', not proof one generator is universally best. Quality is size-controlled; quantity enters only via the combined score with diminishing returns and a quality gate, so a larger dataset never wins on size alone. Small real N (~99) and high feature dims make every metric approximate.

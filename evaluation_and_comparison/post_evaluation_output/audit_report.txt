@@ -1,0 +1,32 @@
+================================================================================
+AUDIT REPORT — original vs corrected (held-out) evaluation
+================================================================================
+
+[Worked example] quality -> quantity -> gate -> combined (corrected), 3 datasets:
+  Jitter_X_imu             fidelity=0.880 diversity=0.760 quality=0.820 quantity=0.833 -> combined=0.70*quality+0.30*quantity=0.824
+  TimeGAN_X_imu_ir         fidelity=0.561 diversity=0.919 quality=0.740 quantity=1.000 -> combined=0.70*quality+0.30*quantity=0.818
+  Jitter_X_imu_ir_radar    fidelity=0.994 diversity=0.638 quality=0.816 quantity=0.625 -> combined=0.70*quality+0.30*quantity=0.759
+
+A. MEMORISATION (near-duplicate fraction of real samples):
+   Jittering   mean memo_rate = 1.000  (range 1.000-1.000)
+   VAE+TimeGAN mean memo_rate = 0.114  (range 0.000-0.636)
+   -> Jittering copies real samples far more than the generators (delta=0.886).
+   Genuine-sample baseline memo_null ~ 0.098 (= MEMO_EPS_QUANTILE by construction). Flagged HIGH memorisation risk (one-sided binomial vs baseline, a=0.05): Jitter_X_imu, Jitter_X_imu_ir_radar, Jitter_X_imu_radar, Jitter_X_imu_ir, TimeGAN_X_imu_radar, VAE_X_imu_radar.
+   memo_rate=1.0 for Jittering is a GENUINE result, not a bug: jitter = real + small noise, so each sample's nearest real neighbour is its own source, within eps. The corrected diversity score already docks this via the novelty term; the flag makes the trade-off explicit so a top rank is not read as 'best generative model'.
+
+B. RANKING — original vs corrected:
+   Original #1 : Jitter_X_imu (combined 0.920)
+   Corrected #1: Jitter_X_imu (combined 0.824, memo_rate 1.000)
+   Biggest rank moves (corrected − original, + = improved):
+     TimeGAN_X_imu_ir         before#5 -> after#2 (Δ+3)
+     Jitter_X_imu_ir          before#2 -> after#5 (Δ-3)
+     Jitter_X_imu_ir_radar    before#3 -> after#3 (Δ+0)
+     Jitter_X_imu             before#1 -> after#1 (Δ+0)
+
+C. CONCLUSIONS:
+   1. Is Jittering genuinely better here? Still ranks #1 after correction on the quality framework (corrected combined 0.824), BUT flagged HIGH memorisation risk (near-duplicate rate 1.000 vs ~0.101 baseline): it largely RESAMPLES real data. Treat it as a strong augmentation baseline, not a novel generator.
+   2. Was Jittering artificially advantaged? Yes, partly: its memorisation rate (1.000) shows it sits on real samples, which inflated coverage/density/nn in the original (leak removed by the held-out reference + novelty score).
+   3. Are VAE/TimeGAN evaluated fairly? Yes — identical held-out reference, identical scaler/embedding, identical metrics and seeds for all three; their poor scores reflect genuinely poor distributions (Hellinger near 1.0 on this small, high-dim data), not an implementation penalty.
+   4. Which to select for the classifier stage: Jitter_X_imu on the corrected combined score (but see its HIGH memorisation flag above — the downstream check II.8 on unseen real data is the decisive test before committing to it).
+   5. Best sensor combination: IMU+Radar (from the quality-based sensor analysis).
+   6. Limitations: real N~99 with up to 1905 features makes every metric approximate; the held-out reference removes the trivial leak but full de-leaking needs jitter regenerated from the gen split; Hellinger uses a Gaussian approximation; downstream utility (II.8) is the strongest evidence and needs labels.
