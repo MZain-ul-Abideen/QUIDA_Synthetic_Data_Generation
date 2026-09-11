@@ -40,3 +40,8 @@ __pycache__/
 # ==========================
 .env
 .venv/
+
+# ==========================
+# Generated processed data
+# ==========================
+processed/processed/
