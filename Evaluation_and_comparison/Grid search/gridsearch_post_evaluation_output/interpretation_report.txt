@@ -1,0 +1,29 @@
+==============================================================================
+GRID SEARCH POST-EVALUATION — INTERPRETATION REPORT
+==============================================================================
+
+Sensor configuration: IMU+Radar (fixed)
+Datasets evaluated: 4 (2 methods x 2 HP settings)
+
+Q1. Best overall dataset (combined quality+quantity):
+    TimeGAN_same_params (TimeGAN (Default)) — combined 0.997 [quality 0.996, full_N 495]
+
+Q2. Strongest fidelity: TimeGAN (Default) (0.991)
+Q3. Strongest diversity: TimeGAN (Default) (1.000)
+
+Q4. Does optimisation help?
+    VAE: Default=0.027, Optimised=0.100, Δ=+0.073 → YES ✓
+    TimeGAN: Default=0.996, Optimised=0.668, Δ=-0.328 → NO — default is better
+
+Q5. Best method overall:
+    TimeGAN (mean overall 0.832)
+
+------------------------------------------------------------------------------
+RECOMMENDATION:
+  #1 TimeGAN_same_params       [Highest Priority] combined=0.997
+  #2 TimeGAN_best_params       [High Priority] combined=0.767
+  #3 VAE_best_params           [Medium Priority] combined=0.070
+  #4 VAE_same_params           [Low Priority] combined=0.019
+------------------------------------------------------------------------------
+
+Limitations: real N~99 with ~1137 features makes every metric approximate. Downstream utility (classifier performance on unseen real data) is the decisive test.
