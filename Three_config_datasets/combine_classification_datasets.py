@@ -593,7 +593,7 @@ def main():
 
     parser.add_argument(
         "--out-dir",
-        default="Classification_Datasets",
+        default="Model/Classification_Datasets",
         help="Output root directory.",
     )
 
